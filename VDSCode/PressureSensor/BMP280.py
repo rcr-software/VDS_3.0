@@ -42,9 +42,9 @@ class BMP():
             global j, bmp280Alt
                
             j=j+1
-            z[j]=bmp280.altitude-170
+            self.z[j]=bmp280.altitude-170
             bmp280Alt = z[j]
-            print(z[j])  #Prints altitude                     
+            #print(z[j])  #Prints altitude                     
 
         
             xhatminus[j] = xhat[j-1]
@@ -59,7 +59,7 @@ class BMP():
             time.sleep(1)
             
 #display the kalman filtered altitude readings
-    def plotBMP():
+    def plotBMP(self):
         
         plt.figure()
         plt.plot(t, z,'k+',label='noisy measurements')

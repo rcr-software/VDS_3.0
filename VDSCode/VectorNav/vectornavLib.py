@@ -17,20 +17,20 @@ ser = serial.Serial(
 
 class vnav():
     def readVnav(self):
-        while True:
+        while 1:
             vertVel=0
 
             vertVel = float(vertVel)
             startTime = time.time()
         
             x = str(ser.readline())
-            x = x.split(',')
-           
+            x = x.split(',')        
+
             if(len(x) == 13):
                 Accelx = float(x[7])
                 Accely = float(x[8])
                 Accelz = float(x[9])
-            
+
                 Ax = Accelx / (((Accelx**2)+(Accely**2)+(Accelz**2))**.5) #calculate the normal vector
                 Ay = Accely / (((Accelx**2)+(Accely**2)+(Accelz**2))**.5)
                 Az = Accelz / (((Accelx**2)+(Accely**2)+(Accelz**2))**.5)
@@ -48,11 +48,12 @@ class vnav():
             
                 RotationMatrix = numpy.array(((R0,R1,R2), (R3,R4,R5), (R6,R7,R8)))
                 accelVector = numpy.array(((Accelx),(Accely),(Accelz)))
-            
+
                 mul = numpy.dot(RotationMatrix, accelVector)
+                
                 mul[0] = round(mul[0],1)
                 mul[1] = round(mul[1],1)
-
+                print(mul)
                 vertAccel = mul[2]+9.8
                 endTime = time.time()
             
@@ -63,11 +64,9 @@ class vnav():
                 vNavFile.write(str(vertVel))
                 vNavFile.write('\n')
                 
-                print(x[1])
                 ser.flushInput()
                 
-                
-                time.sleep(1)
+            time.sleep(.1)
         
     def vnavTxtClose(self):
         vNavFile.close()

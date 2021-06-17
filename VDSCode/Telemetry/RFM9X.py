@@ -24,7 +24,7 @@ rfm9x.tx_power = 23
 prev_packet = None
 
 g=GPS.GPS()
-b=BMP280.BMP
+b=BMP280.BMP()
 
 class telemetry():
     def telemetrySend(self):
@@ -39,7 +39,7 @@ class telemetry():
                 gpsPacket=bytes(gpsData,"utf-8")
                 rfm9x.send(gpsPacket)
                 
-                print(gpsData)
+                #print(gpsData)
                 time.sleep(.1)
                 
     def telemetryReceive(self):
@@ -80,3 +80,4 @@ class telemetry():
 #         time.sleep(.5)
 #         display.fill(0)
 #         display.show()
+

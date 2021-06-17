@@ -24,5 +24,5 @@ class systemRead:
                 if i==2:
                     RAM = line.split()[1:4]
                     usedRam = RAM[1]
-            print(CPUTemp)
+            #print(CPUTemp)
             time.sleep(1) 
