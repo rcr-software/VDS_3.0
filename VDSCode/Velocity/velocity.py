@@ -6,7 +6,7 @@ sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode/PressureSensor')
 import BMP280
 
 b=BMP280.BMP()
-
+G=9.8
 class velocity():
 #  /**************************************************************************/
 #  /*!
@@ -15,6 +15,7 @@ class velocity():
 #  Author: Ben
 #  */
 #  /**************************************************************************/
+    
     def vSPP(self, alt, vel):
         
         global returnVal, x
@@ -56,11 +57,11 @@ class velocity():
 #Author: Ben
 #*/
 #/**************************************************************************/
+            
     def velocity_h(self, c, alt, v0, h0): 
-        global K1, K2, x
-        K1 = -1 / math.sqrt(c*G)ome
-        *math.atan(v0*math.sqrt(c / G))
-        K2 = h0 - 1 / c*math.log(math.cos(math.sqrt(c*G)*K1))
+        
+        K1 = (-1 / math.sqrt(c*G)) * math.atan(v0*math.sqrt(c / G))
+        K2 = h0 - (1 / c)*math.log(math.cos((math.sqrt(c*G)) * K1))
         x = 1 - math.exp(-2 * c*(K2 - alt))
         
         if (x < 0):

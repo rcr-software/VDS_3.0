@@ -56,12 +56,6 @@ class telemetry():
                     
                 else:
                     packetText = str(packet,"utf-8")
-#                     display.text('RX: ', 0, 0, 1)
-#                     display.text(packetText, 25, 0, 1)
-#                     display.show()
-#                     time.sleep(.5)
-#                     display.fill(0) 
-#                     display.show()
                     local_rssi=rfm9x.last_rssi()
                     
             

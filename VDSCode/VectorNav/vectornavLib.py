@@ -27,10 +27,11 @@ class vnav():
             x = x.split(',')        
 
             if(len(x) == 13):
+            
                 Accelx = float(x[7])
                 Accely = float(x[8])
                 Accelz = float(x[9])
-
+                
                 Ax = Accelx / (((Accelx**2)+(Accely**2)+(Accelz**2))**.5) #calculate the normal vector
                 Ay = Accely / (((Accelx**2)+(Accely**2)+(Accelz**2))**.5)
                 Az = Accelz / (((Accelx**2)+(Accely**2)+(Accelz**2))**.5)
@@ -53,8 +54,8 @@ class vnav():
                 
                 mul[0] = round(mul[0],1)
                 mul[1] = round(mul[1],1)
-                print(mul)
                 vertAccel = mul[2]+9.8
+                #print(vertAccel)
                 endTime = time.time()
             
                 timeElapsed = startTime-endTime
@@ -65,8 +66,7 @@ class vnav():
                 vNavFile.write('\n')
                 
                 ser.flushInput()
-                
-            time.sleep(.1)
+                time.sleep(.1)
         
     def vnavTxtClose(self):
         vNavFile.close()
