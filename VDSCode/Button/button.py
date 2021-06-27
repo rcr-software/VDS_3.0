@@ -47,7 +47,7 @@ class buttonOps():
                 return btnValC
                 time.sleep(1)
                 
-            print("Checking for button Press")        
+            #print("Checking for button Press")        
             time.sleep(1)
         
             btnValA=0
