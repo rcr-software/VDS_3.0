@@ -4,8 +4,6 @@ import math
 
 sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode/PressureSensor')
 import BMP280
-sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode')
-import RocketConstants as rocket
 
 b=BMP280.BMP()
 G=9.8
@@ -22,11 +20,11 @@ class velocity():
         
         global returnVal, x
         
-        x = 1 - exp(-2 * rocket.minC *(rocket.targetAlt - alt))
+        x = 1 - exp(-2 * rocket.Cmin *(rocket.targetAlt - alt))
         if (x < 0):
             x = 0
         if (vel < rocket.interVel):
-            returnVal = velocity_h(rocket.min, alt, 0, rocket.targetAlt)
+            returnVal = velocity_h(rocket.Cmin, alt, 0, rocket.targetAlt)
         elif (vel >= rocket.interVel):
             if (alt < rocket.targetAlt):
                 returnVal = velocity_h(rocket.Cspp, alt, rocket.interVel, rocket.interAlt)

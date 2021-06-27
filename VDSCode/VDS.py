@@ -52,12 +52,11 @@ telemetryReceive.start()
 systemLoads.start()
 telemetrySend.start()
 BMP.start()
-i=61.52
+
 while c.btnValA == 0: # this whle loop kills the threads and executes the rest of the program.
-    time.sleep(.01)
+    time.sleep(1)
     #(round(b.readBMP(),4))
-    print(vel.velocity_h(rocket.c, i, 0, 460.4))
-    i=i+1
+    print(vel.velocity_h(rocket.c, 1000, 200, 10000))
 print("The End")
 
 v.vnavTxtClose()
