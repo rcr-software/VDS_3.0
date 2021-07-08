@@ -18,39 +18,52 @@ btnC = DigitalInOut(board.D12)
 btnC.direction = Direction.INPUT
 btnC.pull = Pull.UP
 
+
 class buttonOps():
     btnValA=0
     btnValB=0
     btnValC=0
-    
     def comm(self):
+        btnA1 = True
+        btnB1 = True
+        btnC1 = True
         while 1:
             # global sendState
             # Check buttons
             if not btnA.value:
                 # Button A Pressed
-                sendState=1
-                btnValA=1
-                return btnValA
-                time.sleep(1)
+                if btnA1:
+                    print("A")
+                    btnValA=1
+                    btnA1 = False 
+            if btnA.value:
+                btnA1 = True
                 
             if not btnB.value:
                 # Button B Pressed
-                sendState=0
-                btnValB=1
-                return btnValB
-                time.sleep(1)
+                if btnB1:
+                    print("B")
+                    btnValB=1
+                    btnB1 = False
+            if btnB.value:
+                btnB1 = True
                 
             if not btnC.value:
                 # Button C Pressed
-                btnValC=1
-                return btnValC
-                time.sleep(1)
+                if btnC1:
+                    print("C")
+                    btnValC=1
+                    btnC1 = False
+            if btnC.value:
+                btnC1 = True
                 
-            #print("Checking for button Press")        
-            time.sleep(1)
-        
             btnValA=0
             btnValB=0
             btnValC=0
-        
+            time.sleep(.01)
+            
+#dc1.displayLogo()
+#dc1.fuckthembitches()
+
+#t = dc1.number2_2
+#print(t)

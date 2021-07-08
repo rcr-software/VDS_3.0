@@ -6,6 +6,7 @@ import os
 import subprocess
 from tkinter import* 
 from picamera import PiCamera
+print("imported default Libraries")
 
 import VectorNav.vectornavLib
 import ultGPS.GPS
@@ -16,6 +17,7 @@ import System.system
 import Display.display
 import Velocity.velocity
 import RocketConstants as rocket
+print("imported custom Libraries")
 
 v=VectorNav.vectornavLib.vnav()
 g=ultGPS.GPS.GPS()
@@ -25,6 +27,7 @@ c=Button.button.buttonOps()
 s=System.system.systemRead()
 d=Display.display.oled()
 vel=Velocity.velocity.velocity()
+
 #############################################
 #setup the Camera [test for cmd: raspivid -o video.h264 -t 10000]
 #camera = PiCamera()
@@ -53,15 +56,16 @@ systemLoads.start()
 telemetrySend.start()
 BMP.start()
 
+i=61.52
 while c.btnValA == 0: # this whle loop kills the threads and executes the rest of the program.
-    time.sleep(1)
+    time.sleep(.01)
     #(round(b.readBMP(),4))
-    print(vel.velocity_h(rocket.c, 1000, 200, 10000))
+    print(vel.velocity_h(rocket.c, i, 0, 460.4))
+    i=i+1
+    
 print("The End")
 
 v.vnavTxtClose()
-
-#close active threads
 
 #close active threads
 
