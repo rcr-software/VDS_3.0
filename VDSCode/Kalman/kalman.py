@@ -1,5 +1,5 @@
 from __future__ import division
-import stats
+from scipy.stats import gaussian
 import numpy as np
 
 class kalman():

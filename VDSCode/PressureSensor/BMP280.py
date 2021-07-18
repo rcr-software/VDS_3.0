@@ -42,7 +42,7 @@ class BMP():
             global j, bmp280Alt
                
             j=j+1
-            self.z[j]=bmp280.altitude-170
+            self.z[j]=bmp280.altitude-100
             bmp280Alt = z[j]
             #print(z[j])  #Prints altitude                     
 
