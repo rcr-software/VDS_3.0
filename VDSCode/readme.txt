@@ -15,6 +15,11 @@ here are some varibale names you will probably use
     pip3 install adafruit-circuitpython-bmp280 
 
     pip3 install adafruit-circuitpython-rfm9x
+    pip3 install sympy
+    sudo apt-get install python3-gi-cairo
+    sudo apt-get install python-gobject-cairo
+
+
 
 2.RaspberryPi configuration
   2.1 interfaces

@@ -3,6 +3,11 @@ import serial
 import numpy
 from threading import Thread
 import math
+import sympy
+import numpy as np
+import matplotlib.pyplot as plt
+from sympy.abc import x as a,y as b, z as c
+import sys
 
 vNavFile = open("vnav.txt","a")
 
@@ -20,6 +25,8 @@ class vnav():
     threadStopFlag=True
     x= [1] * 13
     vnavMessage=[1] * 13
+    gravityVectorRocket=[1] * 3
+    
     def runThread(self,stopFlag):
         self.threadStopFlag=stopFlag
         return(stopFlag)
@@ -30,10 +37,12 @@ class vnav():
             self.x = str(ser.readline())
             self.x = self.x.split(',')              
             if(len(self.x) == 13):
-                #print(self.x)
-                
-                self.vnavMessage=self.x
-                self.getGravityVector(float(self.x[1]),float(self.x[2]),float(self.x[3]))
+                vNavHeader = "b'$VNYMR" in self.x
+                if(vNavHeader==1):
+                    self.vnavMessage=self.x
+                    self.getGravityVector()            
+                    
+                    #print(self.vnavMessage)
             time.sleep(.1)
     def calculateVericalAccel(self):
         while self.threadStopFlag:
@@ -71,18 +80,19 @@ class vnav():
             endTime = time.time()
             timeElapsed = startTime-endTime
             vertVel = round(vertVel + vertAccel*timeElapsed,2)
-                    
-
-            
-            
-            time.sleep(.1)
+                        
+            time.sleep(.5)
             # vNavFile.write(str(vertVel))
            # vNavFile.write('\n')
-    def getGravityVector(self,yaw,pitch,roll):
+    def getGravityVector(self):
+        yaw = float(self.vnavMessage[1])
+        pitch = float(self.vnavMessage[2])
+        roll = float(self.vnavMessage[3])
+        
         rYaw=yaw     *(math.pi/180) #convert from degrees to radians
         rPitch=pitch *(math.pi/180)
         rRoll=roll   *(math.pi/180)
-        gravityVectorEarth = numpy.array(((0), (0), (-1*9.81)))
+        gravityVectorEarth = numpy.array(((0), (0), (9.81)))
         
         yaw0=math.cos(rYaw)
         yaw1=-1*math.sin(rYaw)
@@ -117,9 +127,68 @@ class vnav():
         roll8=math.cos(rRoll)
         rollRotationMatrix = numpy.array(((roll0,roll1,roll2), (roll3,roll4,roll5), (roll6,roll7,roll8)))
         
-        gravityVectorRocket= numpy.dot(numpy.dot(numpy.dot(pitchRotationMatrix, yawRotationMatrix), rollRotationMatrix),gravityVectorEarth)
-        
+        self.gravityVectorRocket= numpy.dot(numpy.dot(numpy.dot(pitchRotationMatrix, yawRotationMatrix), rollRotationMatrix),gravityVectorEarth)
+        return self.gravityVectorRocket
         #print(gravityVectorRocket)   
-        
     def vnavTxtClose(self):
         vNavFile.close()
+
+    def gradientDecent(self):
+        samples = 100
+        alpha = .0001
+        
+        xMeasured = [0]*samples
+        yMeasured = [0]*samples
+        zMeasured = [0]*samples
+        xActual   = [0]*samples
+        yActual   = [0]*samples
+        zActual   = [0]*samples
+        
+        #get a list of data points for each axis
+        time.sleep(1)#wait for vnav to start
+        for i in range(samples):
+             xMeasured[i] = float(self.vnavMessage[7])
+             yMeasured[i] = float(self.vnavMessage[8])
+             zMeasured[i] = float(self.vnavMessage[9])
+             print(xMeasured[i])
+             
+             xActual[i]   = float(self.gravityVectorRocket[0])
+             yActual[i]   = float(self.gravityVectorRocket[1])
+             zActual[i]   = -1*float(self.gravityVectorRocket[2])
+             print(xActual[i])
+             time.sleep(.1)
+             
+        xMeasured = np.array(xMeasured)
+        yMeasured = np.array(yMeasured)
+        zMeasured = np.array(zMeasured)
+        xActual   = np.array(xActual)
+        yActual   = np.array(yActual)
+        zActual   = np.array(zActual)
+        
+        mx, my, mz, bx, by, bz = sympy.symbols('mx my mz bx by bz')
+        mx, my, mz, bx, by, bz = 0, 0, 0, 0, 0, 0
+        fig = plt.figure()
+        
+        plt.plot(xMeasured,xActual)
+        plt.xlabel="Actual Gravity Acceleration"
+        plt.ylabel="Measured Gravity Acceleration"
+        plt.show()
+        for i in range(10000):
+            mx -= alpha*np.sum((mx*xActual+bx-xMeasured)*xActual)
+            #my -= alpha*np.sum((my*yMeasured+by-yActual)*yMeasured)
+            #mz -= alpha*np.sum((mz*zMeasured+bz-zActual)*zMeasured)
+            bx -= alpha*np.sum(bx*xActual+bx-xMeasured)
+            #by -= alpha*np.sum(by*yMeasured+by-yActual)
+            #bz -= alpha*np.sum(bz*zMeasured+bz-zActual)
+        print("slopes and intercepts")    
+        print(mx)
+        #print(my)
+        #print(mz)
+        print(bx)
+        
+        x = np.linspace(-9.8, 9.8, num=samples)
+        y=x*mx+bx
+        
+        
+        #print(by)
+        #print(bz)

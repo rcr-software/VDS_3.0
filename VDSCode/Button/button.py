@@ -4,6 +4,7 @@ from digitalio import DigitalInOut, Direction, Pull
 import busio
 import threading
 
+
 #setup gpio
 # Button A
 btnA = DigitalInOut(board.D5)
@@ -18,12 +19,11 @@ btnC = DigitalInOut(board.D12)
 btnC.direction = Direction.INPUT
 btnC.pull = Pull.UP
 
-
 class buttonOps():
     btnValA=0
     btnValB=0
     btnValC=0
-    def comm(self):
+    def comm(q):
         btnA1 = True
         btnB1 = True
         btnC1 = True
@@ -33,7 +33,7 @@ class buttonOps():
             if not btnA.value:
                 # Button A Pressed
                 if btnA1:
-                    print("A")
+                    q.put("A")
                     btnValA=1
                     btnA1 = False 
             if btnA.value:
@@ -42,7 +42,7 @@ class buttonOps():
             if not btnB.value:
                 # Button B Pressed
                 if btnB1:
-                    print("B")
+                    q.put("B")
                     btnValB=1
                     btnB1 = False
             if btnB.value:
@@ -51,7 +51,7 @@ class buttonOps():
             if not btnC.value:
                 # Button C Pressed
                 if btnC1:
-                    print("C")
+                    q.put("C")
                     btnValC=1
                     btnC1 = False
             if btnC.value:
@@ -61,6 +61,9 @@ class buttonOps():
             btnValB=0
             btnValC=0
             time.sleep(.01)
+
+    
+
             
 #dc1.displayLogo()
 #dc1.fuckthembitches()
