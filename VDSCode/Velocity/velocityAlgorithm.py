@@ -1,8 +1,19 @@
 import sys
 import time
+import threading
+
 sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode/PressureSensor')
 import BMP280
+sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode/VectorNav')
+import vectornavLib
+
+v=vectornavLib.vnav()
 b=BMP280.BMP()
+
+readVnav = threading.Thread(target = v.readVnav, daemon=True)#initialize again since we want to
+v.runThread(True)
+readVnav.start()
+v.gradientDecent()
 
 def calulateVelocity():
     #Variables needed for caluation

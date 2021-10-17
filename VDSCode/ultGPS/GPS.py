@@ -1,3 +1,4 @@
+DUBUG=False
 import serial
 
 gpsData = "0,0,0"
@@ -14,34 +15,41 @@ gps = serial.Serial(
 
 #gather gps data
 class GPS():
-    def __init__(self):
-        self.gpsAltitude=0
-        self.longDec=0
-        self.latDec=0
+    threadStopFlag=True
+    gpsNMEAFile    = open("NMEA_Data","a")
+    gpsDecimalFile = open("GPS_Decimal_Data","a")
+    
+    gpsAltitude    = 0
+    longDec        = 0
+    latDec         = 0
+    
+    def  gpsTxtClose(self):
+        self.gpsDecimalFile.close()
+        self.gpsNMEAFile.close()
         
+    def runThread(self,stopFlag):
+        self.threadStopFlag=stopFlag
+        return(stopFlag)    
     def readGPS(self):
-        while 1:
-        
-            #global longDec, latDec, gpsAltitude, gpsData, y
-            y = str(gps.readline())
+        while self.threadStopFlag:
+            serialNMEA = str(gps.readline())
+            print(serialNMEA)
             
-            gpsStateRMC = "$GPRMC" in y
-            gpsStateGGA = "$GPGGA" in y
+            gpsStateRMC = "$GPRMC" in serialNMEA
+            gpsStateGGA = "$GPGGA" in serialNMEA
             
+            #look for altitude in GGA
             if (gpsStateGGA == 1):
-                y = y.split(',')
-                gpsAltitude = str(float(y[7]))
-                
-            if(gpsStateRMC == 1):
-                gpsNMEAFile = open("NMEA_Data","a")
-                gpsNMEAFile.write(y)
-                gpsNMEAFile.write('\n')
-                
-                y = y.split(',')
-                latNMEA = float(y[3])
-                latDirectionNMEA = str(y[4])
-                longNMEA = float (y[5])
-                longDirectionNMEA = str(y[6])
+                serialNMEA  = serialNMEA.split(',')
+                gpsAltitude = str(float(serialNMEA[7]))
+            #look for lat and long in RMC
+            if (gpsStateRMC == 1):
+ 
+                serialNMEA        = serialNMEA.split(',')
+                latNMEA           = float(serialNMEA[3])
+                latDirectionNMEA  = str(serialNMEA[4])
+                longNMEA          = float (serialNMEA[5])
+                longDirectionNMEA = str(serialNMEA[6])
                 
                 #detrmine the decimal degrees direction
                 if (longDirectionNMEA == "W"):
@@ -55,7 +63,7 @@ class GPS():
                     latDirectionDec = -1
                 
                 #determine the decimal degrees magnitude
-                latDec = round( latDirectionDec * (math.floor(latNMEA / 100) + (latNMEA - ((math.floor(latNMEA / 100)) * 100)) / 60), 4)   
+                latDec  = round( latDirectionDec  * (math.floor(latNMEA  / 100) + (latNMEA  - ((math.floor(latNMEA  / 100)) * 100)) / 60), 4)   
                 longDec = round( longDirectionDec * (math.floor(longNMEA / 100) + (longNMEA - ((math.floor(longNMEA / 100)) * 100)) / 60), 4)
                 
                 #ensure the use of trailing zeros for 4 decimal places
@@ -65,12 +73,14 @@ class GPS():
                 
                 #prepare the text file for google maps
                 gpsData = longDec + "," + latDec + "," + gpsAltitude + " "
-                gpsDecimalFile = open("GPS_Decimal_Data","a")
+               
                 gpsDecimalFile.write(gpsData)
-                gpsDecimalFile.close()
-                gpsNMEAFile.close()
+                self.gpsNMEAFile.write(serialNMEA)
+                self.gpsNMEAFile.write('\n')
                 
                 print(gpsData)
                 
-            return self.latDec, self.longDec, self.gpsAltitude
-    
+            #return self.latDec, self.longDec, self.gpsAltitude
+if DUBUG==True:                
+    g=GPS()
+    g.readGPS()

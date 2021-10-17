@@ -13,7 +13,7 @@ vNavFile = open("vnav.txt","a")
 
 #initialize the serial port for the vectornav
 ser = serial.Serial(
-        port='/dev/serial0',# ttyS0 for the serial line and ttyUSB0 for the usb port
+        port='/dev/ttyS0',# ttyS0 for the serial line and ttyUSB0 for the usb port
         baudrate = 115200,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
@@ -23,6 +23,7 @@ ser = serial.Serial(
 
 class vnav():
     threadStopFlag=True
+    
     x= [1] * 13
     vnavMessage=[1] * 13
     gravityVectorRocket=[1] * 3
@@ -41,8 +42,7 @@ class vnav():
                 if(vNavHeader==1):
                     self.vnavMessage=self.x
                     self.getGravityVector()            
-                    
-                    #print(self.vnavMessage)
+                    print(self.vnavMessage)
             time.sleep(.1)
     def calculateVericalAccel(self):
         while self.threadStopFlag:
@@ -150,12 +150,23 @@ class vnav():
              xMeasured[i] = float(self.vnavMessage[7])
              yMeasured[i] = float(self.vnavMessage[8])
              zMeasured[i] = float(self.vnavMessage[9])
-             print(xMeasured[i])
-             
+  
              xActual[i]   = float(self.gravityVectorRocket[0])
              yActual[i]   = float(self.gravityVectorRocket[1])
              zActual[i]   = -1*float(self.gravityVectorRocket[2])
-             print(xActual[i])
+             #get the measured and actual values in the same direction
+             if (xMeasured[i]<0 and xActual[i]>0) or (xMeasured[i]>0 and xActual[i]<0):
+                 xMeasured[i]=-1*xMeasured[i]
+             if (yMeasured[i]<0 and yActual[i]>0) or (yMeasured[i]>0 and yActual[i]<0):
+                 yMeasured[i]=-1*yMeasured[i]
+             if (zMeasured[i]<0 and zActual[i]>0) or (zMeasured[i]>0 and zActual[i]<0):
+                 zMeasured[i]=-1*zMeasured[i]
+                 
+#              print(zActual[i], end=" ")
+#              print(" ", end=" ")
+#              print(zMeasured[i])    
+#              print("measured ", end=" ")
+#              print("actual")   
              time.sleep(.1)
              
         xMeasured = np.array(xMeasured)
@@ -166,28 +177,70 @@ class vnav():
         zActual   = np.array(zActual)
         
         mx, my, mz, bx, by, bz = sympy.symbols('mx my mz bx by bz')
-        mx, my, mz, bx, by, bz = 0, 0, 0, 0, 0, 0
-        fig = plt.figure()
+        mx, my, mz, bx, by, bz = 1, 1, 1, 1, 1, 1
         
-        plt.plot(xMeasured,xActual)
-        plt.xlabel="Actual Gravity Acceleration"
-        plt.ylabel="Measured Gravity Acceleration"
-        plt.show()
-        for i in range(10000):
-            mx -= alpha*np.sum((mx*xActual+bx-xMeasured)*xActual)
-            #my -= alpha*np.sum((my*yMeasured+by-yActual)*yMeasured)
-            #mz -= alpha*np.sum((mz*zMeasured+bz-zActual)*zMeasured)
-            bx -= alpha*np.sum(bx*xActual+bx-xMeasured)
-            #by -= alpha*np.sum(by*yMeasured+by-yActual)
-            #bz -= alpha*np.sum(bz*zMeasured+bz-zActual)
+        for i in range(1000):
+            mx -= alpha*np.sum((mx*xMeasured+bx-xActual)*xMeasured)
+            my -= alpha*np.sum((my*yMeasured+by-yActual)*yMeasured)
+            mz -= alpha*np.sum((mz*zMeasured+bz-zActual)*zMeasured)
+            bx -= alpha*np.sum( mx*xMeasured+bx-xActual)
+            by -= alpha*np.sum( my*yMeasured+by-yActual)
+            bz -= alpha*np.sum( mz*zMeasured+bz-zActual)
+
+#         result1=sympy.solve([
+#             np.sum(((mx*xActual+bx-xMeasured)*xActual)),
+#             np.sum(( mx*xActual+bx-xMeasured))],[mx,bx])
+#         result2=sympy.solve([
+#             np.sum(((my*yActual+by-yMeasured)*yActual)),
+#             np.sum(( my*yActual+by-yMeasured))],[my,by])
+#         result3=sympy.solve([
+#             np.sum(((mz*zActual+bz-zMeasured)*zActual)),
+#             np.sum(( mz*zActual+bz-zMeasured))],[mz,bz])
+#         mx=result1[mx]
+#         my=result2[my]
+#         mz=result3[mz]
+#         bx=result1[bx]
+#         by=result2[by]
+#         bz=result3[bz]        
         print("slopes and intercepts")    
         print(mx)
-        #print(my)
-        #print(mz)
+        print(my)
+        print(mz)
         print(bx)
+        print(by)
+        print(bz)
         
         x = np.linspace(-9.8, 9.8, num=samples)
-        y=x*mx+bx
+        xl=x*mx+bx
+        y = np.linspace(-9.8, 9.8, num=samples)
+        yl=y*my+by
+        z = np.linspace(-9.8, 9.8, num=samples)
+        zl=z*mz+bz
+        
+        plt.figure(figsize=(16,9),dpi=80)
+        
+        plt.subplot(1,3,1)     
+        plt.plot(xMeasured,xActual, 'bo')
+        plt.plot(x,xl,"b-",label="X lsrl")
+        plt.xlabel("Actual Gravity Acceleration")
+        plt.ylabel("Measured Gravity Acceleration")
+        
+        plt.subplot(1,3,2) 
+        plt.plot(yMeasured,yActual, 'ro')
+        plt.plot(y,yl,"r-",label="Y lsrl")
+        plt.xlabel("Actual Gravity Acceleration")
+        plt.ylabel("Measured Gravity Acceleration")
+        
+        plt.subplot(1,3,3) 
+        plt.plot(zMeasured,zActual, 'go')
+        plt.plot(z,zl,"g-",label="Z lsrl")
+        plt.xlabel("Actual Gravity Acceleration")
+        plt.ylabel("Measured Gravity Acceleration")
+        
+        
+        plt.show()
+        
+        return mx,my,mz,bx,by,bz
         
         
         #print(by)

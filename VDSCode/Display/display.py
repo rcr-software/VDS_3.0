@@ -74,7 +74,7 @@ class oled():
                 return
     def display1(self,number_1,number_2,number_3):
         display.fill(0)
-        daddy = ["1. System Check", "2. Blade Check" , "3. Sensor Check", "4. Range Test", "5. Exit"]
+        daddy = ["1. System Check", "2. Blade Check" , "3. Sensor Check", "4. Sequences", "5. Exit"]
         display.text(daddy[number_1], 0, 8, 1)
         display.text(daddy[number_2], 0, 16, 1)
         display.text(daddy[number_3], 0, 25, 1)
@@ -103,11 +103,12 @@ class oled():
         display.text(daddy[2], 0, 25, 1)
         display.text("<---",100,arrow4,1)
         display.show()
-    def display5(self):
+    def display5(self,arrow5):
         display.fill(0)
-        daddy = ["1. Send Data"]
+        daddy = ["1. Send Data", "2. Launch"]
         display.text(daddy[0], 0, 8, 1)
-        display.text("<---",100,8,1)
+        display.text(daddy[1], 0, 16, 1)
+        display.text("<---",100,arrow5,1)
         display.show()
     def display6(self):
         self.CPU()
@@ -141,7 +142,11 @@ class oled():
         display.fill(0)
         display.text("Send Data Shit", 0, 8, 1)
         display.show()
-
+    def display15(self):
+        display.fill(0)
+        display.text("begining launch sequence", 0, 8, 1)
+        display.show()
+        
     def displayLogo(self):
         time23 = .1
         image = Image.open('Zachpoo/IMG_2131.jpg').resize((display.width, display.height), Image.ANTIALIAS).convert('1')

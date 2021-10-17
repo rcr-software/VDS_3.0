@@ -19,6 +19,7 @@ num3 = 2
 arrow2 = 9
 arrow3 = 8
 arrow4 = 8
+arrow5 = 8
 canGo = True
 global currentDisplay
 currentDisplay = 1
@@ -64,6 +65,12 @@ class main():
             if arrow4 == 32:
                 arrow4 = 8
             dc1.display4(arrow4)
+        elif currentDisplay == 5:
+            arrow5 = arrow5 + 8
+            if arrow5 == 32:
+                arrow5 = 8
+            dc1.display5(arrow5)
+
     def buttonB():
         global num1,num2,num3,arrow2,arrow3,arrow4,arrow5,currentDisplay
         if currentDisplay == 1:
@@ -95,6 +102,11 @@ class main():
             if arrow4 == 0:
                 arrow4 = 24
             dc1.display4(arrow4)
+        elif currentDisplay == 5:
+            arrow5 = arrow5 - 8
+            if arrow5 == 0:
+                arrow5 = 24
+            dc1.display5(arrow5)
     def buttonC():
         global num2,arrow2,currentDisplay,arrow3,arrow4,arrow5
         if currentDisplay == 1:
@@ -108,10 +120,11 @@ class main():
                 dc1.display4(arrow4)
                 currentDisplay = 4
             elif num2 == 3:
-                dc1.display5()
+                dc1.display5(arrow5)
                 currentDisplay = 5
             elif num2 == 4:
-                print("Exit")
+                currentDisplay = 16
+                
         elif currentDisplay == 2:
             if arrow2 == 9:
                 dc1.display6()
@@ -140,8 +153,12 @@ class main():
                 dc1.display13()
                 currentDisplay = 13
         elif currentDisplay == 5:
-            dc1.display14()
-            currentDisplay = 14
+            if arrow5 == 8:
+                dc1.display14()
+                currentDisplay = 14
+            elif arrow5 == 16:
+                dc1.display15()
+                currentDisplay = 15
         elif currentDisplay == 6:
             dc1.display1(num1,num2,num3)  
             currentDisplay = 1
@@ -167,49 +184,3 @@ class main():
             time.sleep(.01)
     detect = threading.Thread(target = detectingPresses)
     detect.start()
-#DANGER
-    #DANGER
-        #DANGER
-            #DANGER
-                #DANGER
-
-
-
-
-            
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-
-
-
-    
-    
-
-
-
-
- 
