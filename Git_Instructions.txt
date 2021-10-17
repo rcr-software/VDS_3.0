@@ -1,0 +1,30 @@
+Initial Steps:
+
+sudo apt-get install git
+git -version
+cd Desktop
+git clone https://github.com/rcr-software/VDS_3.0.git
+
+Whenever you wanna upload:
+
+cd Desktop
+cd VDS_3.0
+git status
+git add .
+git status
+git commit -m "COMMENTS"  <-- Include ""
+git push                  
+
+NOTES:
+
+After "git push" you will enter username for github as usual
+but the password has to be a special access token.
+Go here: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
+create token for whatever controls
+Paste that token in for when it asks for password.
+
+
+
+ 
+
+
