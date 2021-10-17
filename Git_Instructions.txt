@@ -13,7 +13,7 @@ git status
 git add .
 git status
 git commit -m "COMMENTS"  <-- Include ""
-git push                  
+git push                  <-- Refer to NOTES    
 
 NOTES:
 
