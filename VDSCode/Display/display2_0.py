@@ -37,7 +37,7 @@ image = Image.new('1',(width, height))
 draw = ImageDraw.Draw(image)
 font = ImageFont.load_default()
 
-#IGNORE EVERYTHING ABOVE THIS FUTURE PLEBIANS -briar
+#IGNORE EVERYTHING ABOVE THIS FUTURE PLEBIANS -briar s
 
 #in this here class below, add your functions that you wish to call in the gui EX CPU and MEM
 
