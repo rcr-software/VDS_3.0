@@ -4,7 +4,7 @@ import math
 
 sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode/PressureSensor')
 import BMP280
-sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode')
+sys.path.insert(1,'/home/pi/Desktop/VDS_3.0/VDSCode/Data')
 import RocketConstants as rocket
 
 b=BMP280.BMP()

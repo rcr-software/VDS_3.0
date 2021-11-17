@@ -65,6 +65,10 @@ def displaySelector():
         if currentD == 14:
             if telemetryStarted == False:
                 t.runThread(True)
+                v.runThread(True)
+                
+                readVnav = threading.Thread(target = v.readVnav, daemon=True)#initialize again since we want to 
+                readVnav.start()
                 
                 telemetrySend    = threading.Thread(target = t.telemetrySend, daemon=True)#initialize again since we want to 
                 telemetryReceive = threading.Thread(target = t.telemetryReceive, daemon=True)
@@ -176,7 +180,7 @@ def displaySelector():
 #                 something.runThread(False)
 #                 bm8280Started = False
             if readGPS.is_alive():
-                readGPS.runThread(False)
+                g.runThread(False)
                 gpsStarted = False
 
 
@@ -187,5 +191,4 @@ displaySelector.start()
 
 #close active threads
 
-
- 
+                                            

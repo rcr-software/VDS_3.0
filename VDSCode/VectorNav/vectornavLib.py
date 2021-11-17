@@ -1,3 +1,5 @@
+DUBUG=True
+
 import time
 import serial
 import numpy
@@ -13,7 +15,7 @@ vNavFile = open("vnav.txt","a")
 
 #initialize the serial port for the vectornav
 ser = serial.Serial(
-        port='/dev/ttyS0',# ttyS0 for the serial line and ttyUSB0 for the usb port
+        port='/dev/ttyUSB0',# ttyS0 for the serial line and ttyUSB0 for the usb port
         baudrate = 115200,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
@@ -34,9 +36,11 @@ class vnav():
     
     def readVnav(self):
         while self.threadStopFlag:
+            print(self.x)
             ser.flushInput()
             self.x = str(ser.readline())
-            self.x = self.x.split(',')              
+            self.x = self.x.split(',')
+            
             if(len(self.x) == 13):
                 vNavHeader = "b'$VNYMR" in self.x
                 if(vNavHeader==1):
@@ -243,5 +247,6 @@ class vnav():
         return mx,my,mz,bx,by,bz
         
         
-        #print(by)
-        #print(bz)
+if DUBUG==True:                
+    v=vnav()
+    v.readVnav()

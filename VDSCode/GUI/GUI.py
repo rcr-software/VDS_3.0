@@ -4,8 +4,8 @@ import threading
 import RPi.GPIO as GPIO
 import board
 
-sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode/Display')
-sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode/Button')
+sys.path.insert(1,'/home/pi/Desktop/VDS_3.0/VDSCode/Display')
+sys.path.insert(1,'/home/pi/Desktop/VDS_3.0/VDSCode/Button')
 import button
 import display
 button_a_pin = 5
