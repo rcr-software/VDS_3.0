@@ -1,5 +1,3 @@
-DUBUG=0
-
 import time
 import serial
 import numpy
@@ -15,7 +13,7 @@ vNavFile = open("vnav.txt","a")
 
 #initialize the serial port for the vectornav
 ser = serial.Serial(
-        port='/dev/ttyUSB0',# ttyS0 for the serial line and ttyUSB0 for the usb port
+        port='/dev/ttyS0',# ttyS0 for the serial line and ttyUSB0 for the usb port
         baudrate = 115200,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
@@ -28,9 +26,6 @@ class vnav():
     
     x= [1] * 13
     vnavMessage=[1] * 13
-    yaw=0
-    pitch=0
-    roll=0
     gravityVectorRocket=[1] * 3
     
     def runThread(self,stopFlag):
@@ -41,13 +36,13 @@ class vnav():
         while self.threadStopFlag:
             ser.flushInput()
             self.x = str(ser.readline())
-            self.x = self.x.split(',')
-            
+            self.x = self.x.split(',')              
             if(len(self.x) == 13):
                 vNavHeader = "b'$VNYMR" in self.x
                 if(vNavHeader==1):
                     self.vnavMessage=self.x
                     self.getGravityVector()            
+                    print(self.vnavMessage)
             time.sleep(.1)
     def calculateVericalAccel(self):
         while self.threadStopFlag:
@@ -90,13 +85,13 @@ class vnav():
             # vNavFile.write(str(vertVel))
            # vNavFile.write('\n')
     def getGravityVector(self):
-        self.yaw = float(self.vnavMessage[1])
-        self.pitch = float(self.vnavMessage[2])
-        self.roll = float(self.vnavMessage[3])
+        yaw = float(self.vnavMessage[1])
+        pitch = float(self.vnavMessage[2])
+        roll = float(self.vnavMessage[3])
         
-        rYaw=self.yaw     *(math.pi/180) #convert from degrees to radians
-        rPitch=self.pitch *(math.pi/180)
-        rRoll=self.roll   *(math.pi/180)
+        rYaw=yaw     *(math.pi/180) #convert from degrees to radians
+        rPitch=pitch *(math.pi/180)
+        rRoll=roll   *(math.pi/180)
         gravityVectorEarth = numpy.array(((0), (0), (9.81)))
         
         yaw0=math.cos(rYaw)
@@ -248,6 +243,5 @@ class vnav():
         return mx,my,mz,bx,by,bz
         
         
-if DUBUG==True:                
-    v=vnav()
-    v.readVnav()
+        #print(by)
+        #print(bz)

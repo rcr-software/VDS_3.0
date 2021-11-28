@@ -37,34 +37,9 @@ image = Image.new('1',(width, height))
 draw = ImageDraw.Draw(image)
 font = ImageFont.load_default()
 
-#IGNORE EVERYTHING ABOVE THIS FUTURE PLEBIANS -briar s
-
-#in this here class below, add your functions that you wish to call in the gui EX CPU and MEM
-
-class oled:
-    
-    def __init__(self, task1, task2, task3): #THIS INITIALIZES
-        self.task1 = task1#DONT TOUCH UNLESS YOU KNOW WHAT YOUR DOIN
-        self.task2 = task2
-        self.task3 = task3
-
-    def createDisplay(self, icount): #THIS CREATES A SCENE ON THE OLED THAT YOU CAN SEE. WITH LIKE YOUR EYES AND STUFF
-        #DONT TOUCH THIS YOU NERD
-        display.fill(0)
-        display.text(self.task1, 0, 8, 1)
-        display.text(self.task2, 0, 16, 1)
-        display.text(self.task3, 0, 25, 1)
-        
-        if icount == 1:  
-            display.text("<---",100,8,1)
-        elif icount == 2:#EACH OF THESE CONDITIONS DETERMINES WHERE THE ARROW POINTS BASED ON THE COUNTER
-            display.text("<---",100,16,1)
-        elif icount == 3:
-            display.text("<---",100,25,1)
-        display.show()
-        
-    def CPU(self): #EXAMPLE FUNCTION TO BE CALLED
-        while True: #TOUCH THIS
+class oled():
+    def CPU(self):
+        while True:
             display.fill(0)
             cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
             CPU = subprocess.check_output(cmd, shell = True )
@@ -72,7 +47,7 @@ class oled:
             display.text(str(CPU),0,8,1)
             cpu_temp = CPUTemperature()
             display.text("Temperature: " + str(cpu_temp.temperature),0,16,1)
-            display.text("Exit: Press A",0,25,1)
+            display.text("Exit: Hold A then C",0,25,1)
             display.show()
             btnC = DigitalInOut(board.D5)
             btnC.direction = Direction.INPUT
@@ -80,9 +55,8 @@ class oled:
             if not btnC.value:
                 print("a pressed")
                 return
-            
-    def Mem(self):#EXAMPLE FUNCTION TO BE CALLED
-        while True:#TOUCH THIS
+    def Mem(self):
+        while True:
             display.fill(0)
             cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%sMB %.2f%%\", $3,$2,$3*100/$2 }'"
             MemUsage = subprocess.check_output(cmd, shell = True )
@@ -91,14 +65,88 @@ class oled:
             time.sleep(0.01)
             display.text(str(MemUsage),0,8,1)
             display.text(str(Disk),0,16,1)
-            display.text("Exit: Press A",0,25,1)
+            display.text("Exit: Hold A then C",0,25,1)
             display.show()
             btnC = DigitalInOut(board.D5)
             btnC.direction = Direction.INPUT
             btnC.pull = Pull.UP
             if not btnC.value:
                 return
-            
+    def display1(self,number_1,number_2,number_3):
+        display.fill(0)
+        daddy = ["1. System Check", "2. Blade Check" , "3. Sensor Check", "4. Sequences", "5. Exit"]
+        display.text(daddy[number_1], 0, 8, 1)
+        display.text(daddy[number_2], 0, 16, 1)
+        display.text(daddy[number_3], 0, 25, 1)
+        display.text("<---",100,16,1)
+        display.show()
+    def display2(self,arrow2):
+        display.fill(0)
+        daddy = ["1. CPU/Temp", "2. Mem/Disk"]
+        display.text(daddy[0], 0, 8, 1)
+        display.text(daddy[1], 0, 16, 1)
+        display.text("<---",100,arrow2,1)
+        display.show()
+    def display3(self,arrow3):
+        display.fill(0)
+        daddy = ["1. Inch Inward", "2. Inch Outward","3. Full Sweep"]
+        display.text(daddy[0], 0, 8, 1)
+        display.text(daddy[1], 0, 16, 1)
+        display.text(daddy[2], 0, 25, 1)
+        display.text("<---",100,arrow3,1)
+        display.show()      
+    def display4(self,arrow4):
+        display.fill(0)
+        daddy = ["1. V Nav", "2. BMP280 Check", "3. GPS Check"]
+        display.text(daddy[0], 0, 8, 1)
+        display.text(daddy[1], 0, 16, 1)
+        display.text(daddy[2], 0, 25, 1)
+        display.text("<---",100,arrow4,1)
+        display.show()
+    def display5(self,arrow5):
+        display.fill(0)
+        daddy = ["1. Send Data", "2. Launch"]
+        display.text(daddy[0], 0, 8, 1)
+        display.text(daddy[1], 0, 16, 1)
+        display.text("<---",100,arrow5,1)
+        display.show()
+    def display6(self):
+        self.CPU()
+    def display7(self):
+        self.Mem()
+    def display8(self):
+        display.fill(0)
+        display.text("Inward", 0, 8, 1)
+        display.show()
+    def display9(self):
+        display.fill(0)
+        display.text("Outward", 0, 8, 1)
+        display.show()
+    def display10(self):
+        display.fill(0)
+        display.text("Sweep", 0, 8, 1)
+        display.show()
+    def display11(self):
+        display.fill(0)
+        display.text("V Nav", 0, 8, 1)
+        display.show()
+    def display12(self):
+        display.fill(0)
+        display.text("BMP280 Check", 0, 8, 1)
+        display.show()
+    def display13(self):
+        display.fill(0)
+        display.text("GPS Check", 0, 8, 1)
+        display.show()
+    def display14(self):
+        display.fill(0)
+        display.text("Send Data Shit", 0, 8, 1)
+        display.show()
+    def display15(self):
+        display.fill(0)
+        display.text("begining launch sequence", 0, 8, 1)
+        display.show()
+        
     def displayLogo(self):
         time23 = .1
         image = Image.open('Zachpoo/IMG_2131.jpg').resize((display.width, display.height), Image.ANTIALIAS).convert('1')
@@ -175,8 +223,14 @@ class oled:
         timeDelay = .05
         for x in range (1,74):
             x=str(x).zfill(3)
-            location='fortnite/ezgif-frame-' + x + '.jpg'
+            location='Display/fortnite/ezgif-frame-' + x + '.jpg'
             fortniteImg = Image.open(location).resize((display.width, display.height), Image.ANTIALIAS).convert('1')
             display.image(fortniteImg)
             display.show()
             time.sleep(timeDelay)
+
+
+
+
+
+

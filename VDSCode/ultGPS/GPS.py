@@ -1,4 +1,4 @@
-DUBUG=1
+DUBUG=0
 import serial
 import math
 gpsData = "0,0,0"
