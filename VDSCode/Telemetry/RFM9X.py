@@ -1,3 +1,5 @@
+DEBUG=0
+
 import adafruit_rfm9x
 import board
 from digitalio import DigitalInOut
@@ -54,7 +56,7 @@ class telemetry():
             display.text('RFM9x: ERROR', 0, 0, 1)
             if debug:
                 print('RFM9x Error: ', error)
-        while not Ready:#threadActivate ==1:     str(g.readGPS()[0]) + ',' + str(g.readGPS()[1]) + ',' +   
+        while not Ready and self.threadStopFlag:#threadActivate ==1:     str(g.readGPS()[0]) + ',' + str(g.readGPS()[1]) + ',' +   
             global local_rssi
             packet = None
             packet = rfm9x.receive()
@@ -73,10 +75,9 @@ class telemetry():
                     if debug:
                         print("Terrible Packet Quality Received")
         
-        while Ready:
+        while Ready and self.threadStopFlag:
             
             packetNum=packetNum+1
-            
             gpsData="v:" + str(format(packetNum,'08d')) + ',' +  str(format(round(b.readBMP(),4), '08f')) + ',' + str(format(rfm9x.last_rssi,'04d')) + ',' + str(v.yaw) + ',' + str(v.pitch) + ',' + str(v.roll)# + ',' + str(CPUTemp) + ',' + str(usedRAM) + ',' + str(CPULoad) + ',' + str(gpsfix) + ',' + str(pressure) + ',' + str(battery) + ',' + str(local_rssi) + ',' + str(frequency) + ',' + str(temp1) + ',' + str(temp2) + ',' + str(temp3) + ',' + str(press1) + ',' + str(press2) + ',' + str(press3) + ',' + str(noid1) + ',' + str(noid2) + ',' + str(noid3) + ',' + str(noid4) + ',' + str(noid5) + ',' + str(noid6) + ',' + str(noid7)
             gpsPacket=bytes(gpsData,"utf-8")
             rfm9x.send(gpsPacket)
@@ -92,5 +93,7 @@ class telemetry():
             if debug:
                 print('RFM9x Error: ', error)
     
-
+if DEBUG==1:
+    r=telemetry()
+    r.radioCheck()
 

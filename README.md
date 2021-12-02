@@ -1,5 +1,4 @@
 # VDS_3.0
-here are some varibale names you will probably use
 1.Instalation of basic tools:
 
   1.1 update raspberry pi

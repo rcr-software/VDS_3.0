@@ -11,6 +11,7 @@ import VectorNav.vectornavLib
 import ultGPS.GPS
 import PressureSensor.BMP280
 import Telemetry.RFM9X
+
 import System.system
 import Display.display
 import Velocity.velocity
@@ -143,11 +144,12 @@ def displaySelector():
                 
         elif currentD == 15: #main launch sequence
             #setup the Camera [test for cmd: raspivid -o video.h264 -t 10000]
-            camera = PiCamera()
-            camera.start_recording("testvid.h264")
+            #camera = PiCamera()
+            #camera.start_recording("testvid.h264")
+            print("screen 15")
         elif currentD == 16: #main launch sequence
             print("Exit")
-            camera.stop_recording()
+            #camera.stop_recording()
             gpsDecimalFile.close()
             v.vnavTxtClose()
             
@@ -190,5 +192,3 @@ displaySelector = threading.Thread(target = displaySelector)
 displaySelector.start()
 
 #close active threads
-
-                                            
