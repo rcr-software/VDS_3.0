@@ -18,7 +18,7 @@ scrnNum = 0
 
 
 #ALRIGHT IDIOTS LISTEN UP, THIS HAS TO BE A MULTIPLE OF 3 CAUSE WE'RE TOO LAZY FOR EDGE CASES
-optionList = ["1. ", "2. ", "3. ", "4, ", "5. ", "6. ", "7. ", "8 ", "9 "]
+optionList = ["1. CPU", "2. LOG ALT", "3. LOG GPS", "4, LOG IMU", "5. ", "6. ", "7. ", "8 ", "9 "]
 NUM_OF_SCREENS = int(len(optionList)/3)
 scrnArray = [NUM_OF_SCREENS] * len(optionList)
 
@@ -65,6 +65,12 @@ class main():
     def buttonC(): #PUT CONDITIONS TO RUN FUNCTIONS FROM DISPLAY
         if scrnNum == 0 and selector == 1:
             scrnArray[scrnNum].CPU()
+        if scrnNum == 0 and selector == 2:
+            scrnArray[scrnNum].LOG_ALT()
+        if scrnNum == 0 and selector == 3:
+            scrnArray[scrnNum].LOG_GPS()
+        if scrnNum == 1 and selector == 1:
+            scrnArray[scrnNum].LOG_IMU()
             
     def detectingPresses():
         while True:

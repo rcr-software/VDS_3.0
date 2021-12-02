@@ -16,7 +16,9 @@ from PIL import Image
 import sys
 sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode/Display')
 sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode/Telemetry')
+sys.path.insert(1,'path to LOGS')
 
+import logging_functions
 
 # Setup i2c bus  sudo i2cdetect -y 1
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -98,3 +100,33 @@ class oled:
             btnC.pull = Pull.UP
             if not btnC.value:
                 return
+
+    def LOG_ALT(self):
+        logging_functions.alt()
+        display.text("Now logging Altitude data: Press A", 0, 25, 1)
+        display.show()
+        btnC = DigitalInOut(board.D5)
+        btnC.direction = Direction.INPUT
+        btnC.pull = Pull.UP
+        if not btnC.value:
+            return
+
+    def LOG_GPS(self):
+        logging_functions.gps()
+        display.text("Now logging GPS data: Press A", 0, 25, 1)
+        display.show()
+        btnC = DigitalInOut(board.D5)
+        btnC.direction = Direction.INPUT
+        btnC.pull = Pull.UP
+        if not btnC.value:
+            return
+
+    def LOG_IMU(self):
+        logging_functions.imu()
+        display.text("Now logging IMU data: Press A", 0, 25, 1)
+        display.show()
+        btnC = DigitalInOut(board.D5)
+        btnC.direction = Direction.INPUT
+        btnC.pull = Pull.UP
+        if not btnC.value:
+            return
