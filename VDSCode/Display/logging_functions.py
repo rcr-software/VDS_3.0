@@ -25,10 +25,9 @@ bmp280.seaLevelhPa = bmp280.pressure
 
 class logging:
     def alt(self):
-        while 1:
-            f = open("ALT_LOG.txt", "a")
-            f.write(bmp280.altitude)
-            f.close()
+        f = open("/home/pi/Desktop/VDS_3.0/VDSCode/LOGS/ALT_LOG.txt", "a")
+        f.write(str(bmp280.altitude))
+        f.close()
 
     def gps(self):
         while 1:
@@ -43,5 +42,5 @@ class logging:
                 pass
             dataVar = imu.readline()
             dataVar = str(dataVar, 'utf-8')  # remove b''
-            f.write(dataVar)
+            f.write(str(dataVar))
             f.close()

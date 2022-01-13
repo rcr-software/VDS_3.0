@@ -34,6 +34,8 @@ global j
 j=0
 
 class BMP():
+    bmpText = open("/home/pi/Desktop/VDS_3.0/VDSCode/LOGS/bmp_log.txt", "a")
+    
     def __init__(self):
         self.z=z    
 
@@ -44,6 +46,8 @@ class BMP():
             j=j+1
             self.z[j]=bmp280.altitude-100
             bmp280Alt = z[j]
+            
+            self.bmpText.write(str(bmp280.altitude) + "\n")
             #print(z[j])  #Prints altitude                     
 
         

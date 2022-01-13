@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 from sympy.abc import x as a,y as b, z as c
 import sys
 
-vNavFile = open("vnav.txt","a")
 
 #initialize the serial port for the vectornav
 ser = serial.Serial(
@@ -27,28 +26,38 @@ class vnav():
     threadStopFlag=True
     
     x= [1] * 13
+    y=0
     vnavMessage=[1] * 13
     yaw=0
     pitch=0
     roll=0
     gravityVectorRocket=[1] * 3
-    
+    vnavText = open("/home/pi/Desktop/VDS_3.0/VDSCode/LOGS/vnav_log.txt", "a")
+      
     def runThread(self,stopFlag):
-        self.threadStopFlag=stopFlag
+        self.threadStopFlag=stopFlag  
         return(stopFlag)
     
     def readVnav(self):
         while self.threadStopFlag:
             ser.flushInput()
             self.x = str(ser.readline())
+            self.y = self.x
             self.x = self.x.split(',')
+
             
             if(len(self.x) == 13):
+                self.vnavText.write(str(self.y) + "\n")
                 vNavHeader = "b'$VNYMR" in self.x
                 if(vNavHeader==1):
                     self.vnavMessage=self.x
                     self.getGravityVector()            
             time.sleep(.1)
+            
+    def closeVnavTxt(self):
+        self.vnavText.close()
+        return
+        
     def calculateVericalAccel(self):
         while self.threadStopFlag:
             startTime = time.time()

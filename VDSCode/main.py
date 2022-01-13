@@ -13,9 +13,9 @@ import PressureSensor.BMP280
 import Telemetry.RFM9X
 
 import System.system
-import Display.display
+import Display.display2_0
 import Velocity.velocity
-import GUI.GUI
+import GUI.gui2_0
 import RocketConstants as rocket
 print("imported custom Libraries")
 
@@ -25,9 +25,8 @@ g=ultGPS.GPS.GPS()
 b=PressureSensor.BMP280.BMP()
 t=Telemetry.RFM9X.telemetry()
 s=System.system.systemRead()
-d=Display.display.oled()
 vel=Velocity.velocity.velocity()
-Gui=GUI.GUI.main()
+Gui=GUI.gui2_0.main()
 
 
 
@@ -39,9 +38,7 @@ BMP = threading.Thread(target = b.readBMP)
 
 #d.displayFortnite()
 t.radioCheck() #check to see if the radio is on
-print("radio check sucsesful")
-
-v.vnavTxtClose()
+print("radio check succsesful")
 
 def displaySelector():
     telemetrySend         = threading.Thread(target = t.telemetrySend,         daemon = True)
@@ -62,14 +59,25 @@ def displaySelector():
 
 
     while 1:
-        currentD = Gui.currentDisplay1()
-        if currentD == 14:
+        screenNum = Gui.screenNum()
+        selector = Gui.selector()
+        if screenNum == 0 and selector == 1: #data send
             if telemetryStarted == False:
                 t.runThread(True)
                 v.runThread(True)
+                #g.runThread(True)
+                #b.runThread(True)
+ 
+                #readBMP = threading.Thread(target = b.readBMP, daemon=True)#initialize again since we want to 
+                #readBMP.start()
                 
                 readVnav = threading.Thread(target = v.readVnav, daemon=True)#initialize again since we want to 
                 readVnav.start()
+                
+                #readGPS = threading.Thread(target = g.readGPS, daemon=True)#initialize again since we want to 
+                #readGPS.start()
+
+
                 
                 telemetrySend    = threading.Thread(target = t.telemetrySend, daemon=True)#initialize again since we want to 
                 telemetryReceive = threading.Thread(target = t.telemetryReceive, daemon=True)
@@ -150,8 +158,10 @@ def displaySelector():
         elif currentD == 16: #main launch sequence
             print("Exit")
             #camera.stop_recording()
+            b.close()
+            v.closeVnavText()
+            g.close()
             gpsDecimalFile.close()
-            v.vnavTxtClose()
             
         else:#if different display
             if calculateVericalAccel.is_alive():

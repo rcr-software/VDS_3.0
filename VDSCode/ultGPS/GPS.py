@@ -13,8 +13,10 @@ gps = serial.Serial(
         timeout=1 
 )
 
+
 #gather gps data
 class GPS():
+    gpsTXT= open("/home/pi/Desktop/VDS_3.0/VDSCode/LOGS/gps_log.txt", "a")
     threadStopFlag=True
     gpsNMEAFile    = open("NMEA_Data","a")
     gpsDecimalFile = open("GPS_Decimal_Data","a")
@@ -33,6 +35,9 @@ class GPS():
     def readGPS(self):
         while self.threadStopFlag:
             serialNMEA = str(gps.readline())
+                    
+            self.gpsTXT.write(str(gps.readline()))
+            
             print(serialNMEA)
             
             gpsStateRMC = "$GPRMC" in serialNMEA
@@ -78,7 +83,9 @@ class GPS():
                 self.gpsNMEAFile.write(str(serialNMEA))
                 self.gpsNMEAFile.write('\n')
                 
-                
+    def closeGpsTxt(self):
+        self.gpsTXT.close()
+        return
                 
             #return self.latDec, self.longDec, self.gpsAltitude
 if DUBUG==True:                
