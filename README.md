@@ -35,7 +35,8 @@
 
 
 Start-up main.py on reboot:
-In order to start up a script on raspberry pi, you must create a service that executes the script. Ordinarily, you'd use rc.local or ecron but both of those do not function on the current raspberry pi due to unknown issues. In order to create a service use the following template:
+In order to start up a script on raspberry pi, you must create a service that executes the script. Ordinarily, you'd use rc.local or ecron but both of those do not
+function on the current raspberry pi due to unknown issues. In order to create a service use the following template:
 
 sudo nano /etc/systemd/system/service-name-here.service
 [Unit]
