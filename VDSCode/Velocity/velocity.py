@@ -1,9 +1,12 @@
 import time
 import sys
 import math
-
-sys.path.insert(1,'/home/pi/Desktop/VDS3.0/VDSCode/PressureSensor')
+import threading
+import multiprocessing
+sys.path.insert(1,'/home/pi/Desktop/VDS_3.0/VDSCode/DAQ/PressureSensor')
 import BMP280
+sys.path.insert(1,'/home/pi/Desktop/VDS_3.0/VDSCode/DAQ/VectorNav')
+#import vectornavLib
 sys.path.insert(1,'/home/pi/Desktop/VDS_3.0/VDSCode/Data')
 import RocketConstants as rocket
 
@@ -46,20 +49,13 @@ class velocity():
             print("vSPP: ")
             print(returnVal)
 
-    
-        
-
-    
-
-
-
 #/**************************************************************************/
 #/*!
 #@brief  Calculates velocity as a function of altitude
 #Author: Ben
 #*/
 #/**************************************************************************/
-            
+ 
     def velocity_h(self, c, alt, v0, h0): 
         
         K1 = (-1 / math.sqrt(c*G)) * math.atan(v0*math.sqrt(c / G))

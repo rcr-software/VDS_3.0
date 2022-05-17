@@ -23,6 +23,10 @@ arrow5 = 8
 canGo = True
 global currentDisplay
 currentDisplay = 1
+
+d=display.oled()
+#d.displayFortnite()
+d.displayLogo()
 class main():
     global q
     q = queue.LifoQueue()

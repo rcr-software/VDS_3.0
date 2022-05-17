@@ -9,6 +9,7 @@ m = 1.4345    # weight of the rocket
 TargetAlt      = 1700 # m   tagret altitude
 
 c=(.5*rho*cd*a)/m
+print(c)
 
 #max nominal rocket values
 maxDrymass        = 30   # kg  Rocket with no propelent mass

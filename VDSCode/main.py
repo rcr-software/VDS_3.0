@@ -2,203 +2,232 @@
 #import Libraries
 import time
 import threading
-import multiprocessing
+
 from tkinter import* 
 from picamera import PiCamera
+import busio
+from digitalio import DigitalInOut, Direction, Pull
+
+import board
+import adafruit_ssd1306
+import queue
+
 print("imported default Libraries")
 
-import VectorNav.vectornavLib
-import ultGPS.GPS
-import PressureSensor.BMP280
-import Telemetry.RFM9X
+#import DAQ.VectorNav.vectornavLib
+import DAQ.ultGPS.GPS
+import DAQ.PressureSensor.BMP280
 
+while 1:
+    try:  #WORK IN PROGRESS
+        import DAQ.AccelerationSensor.BNO055
+        o =  DAQ.AccelerationSensor.BNO055.BNO()
+        print('Accel sensor successfully imported.')
+    except:
+        print('Error found, trying again.')
+        continue
+
+import Telemetry.RFM9X
 import System.system
 import Display.display2_0
-import Velocity.velocity
-import GUI.gui2_0
-import RocketConstants as rocket
+import Button.button
+#import Velocity.velocity
+
+import Data.RocketConstants as rocket
+import Motor.motorhat
+
 print("imported custom Libraries")
 
 #instatiate custom libraries classes
-v=VectorNav.vectornavLib.vnav()
-g=ultGPS.GPS.GPS()
-b=PressureSensor.BMP280.BMP()
+#v=DAQ.VectorNav.vectornavLib.vnav()
+g=DAQ.ultGPS.GPS.GPS()
+a=DAQ.PressureSensor.BMP280.BMP()
+o=DAQ.AccelerationSensor.BNO055.BNO()
 t=Telemetry.RFM9X.telemetry()
 s=System.system.systemRead()
-vel=Velocity.velocity.velocity()
-Gui=GUI.gui2_0.main()
-
+d=Display.display2_0.oled
+b=Button.button.buttonOps
+m=Motor.motorhat.motor()
+#vel=Velocity.velocity.velocity()
 
 
 #initialize threads
 systemLoads = threading.Thread(target = s.systemLoads)
+BMP = threading.Thread(target = a.readBMP)
 
-BMP = threading.Thread(target = b.readBMP)
-#################################################
-
+#check to see if the radio is on
 #d.displayFortnite()
-t.radioCheck() #check to see if the radio is on
+t.radioCheck()
 print("radio check succsesful")
 
-def displaySelector():
-    telemetrySend         = threading.Thread(target = t.telemetrySend,         daemon = True)
-    telemetryReceive      = threading.Thread(target = t.telemetryReceive,      daemon = True)
-    readVnav              = threading.Thread(target = v.readVnav,              daemon = True)#initialize again since we want to
-    calculateVericalAccel = threading.Thread(target = v.calculateVericalAccel, daemon = True)
-    readGPS               = threading.Thread(target = g.readGPS,               daemon = True)
+# telemetrySend         = threading.Thread(target = t.telemetrySend,         daemon = True)
+# telemetryReceive      = threading.Thread(target = t.telemetryReceive,      daemon = True)
+#readVnav              = threading.Thread(target = v.readVnav,              daemon = True)#initialize again since we want to
+#calculateVericalAccel = threading.Thread(target = v.calculateVericalAccel, daemon = True)
+
+# launchsequencealt     = 
+# launchsequencecoords  =
+readGPS               = threading.Thread(target = g.readGPS,               daemon = True)
+
+
+# Setup i2c bus  sudo i2cdetect -y 1
+i2c = busio.I2C(board.SCL, board.SDA)
+# 128x32 OLED Display
+reset_pin = DigitalInOut(board.D4)
+
+
+display = adafruit_ssd1306.SSD1306_I2C(128, 32, i2c, reset=reset_pin)
+button_a_pin = 5
+button_b_pin = 6
+button_c_pin = 12
+canGo = True
+
+selector = 1
+scrnNum = 0
+option=""
+
+
+#ALRIGHT IDIOTS LISTEN UP, THIS HAS TO BE A MULTIPLE OF 3 CAUSE WE'RE TOO LAZY FOR EDGE CASES
+optionList = ["1. Start Data", "2.", "3. ", "4.inch in", "5.inch out", "6.sweep", "7. ", "8. ", "9. EXIT "]
+
+NUM_OF_SCREENS = int(len(optionList)/3)
+scrnArray = [NUM_OF_SCREENS] * len(optionList)
+
+j=0
+for i in range(int(NUM_OF_SCREENS)):
+    scrnArray[i] = d(optionList[j],optionList[j+1],optionList[j+2])
+    j+=3
+
+class main():
+    #######################
+    global q
+    telemetrySendThread    = threading.Thread(target = t.telemetrySend, daemon=True)#initialize again since we want to 
+    telemetryReceiveThread = threading.Thread(target = t.telemetryReceive, daemon=True)
+    launchsequenceaccel   = threading.Thread(target = o.getVertAccel, daemon=True)
+    t.runthread
+    option=0
+    q = queue.LifoQueue()
+    button = threading.Thread(target = b.comm, args = (q,))
+    button.start()
+    #######################
     
-    telemetryStarted = False
-    vnavStarted      = False
-    cpuStarted       = False
-    memStarted       = False
-    inwardStarted    = False
-    outwardStarted   = False
-    sweepStarted     = False
-    bm8280Started    = False
-    gpsStarted       = False
+    def killThreads():
+        print('Killing all threads!')
+        t.runThread(False)
+        o.runThread(False)
+    
+    scrnArray[scrnNum].createDisplay(selector)
+    def buttonA():#THIS SUBTRACTS TO COUNT WHEN PRESSED, THEN CHECKS SELECTOR AND SCRNNUM THRESHHOLDS
+        global selector
+        global scrnNum
+        selector-=1
+        
+        if selector < 1:
+            selector = 3
+            scrnNum -= 1
+            if scrnNum < 0:
+                scrnNum = NUM_OF_SCREENS-1
+        scrnArray[scrnNum].createDisplay(selector)
+        #print(str(scrnNum) + "Selector:" + str(selector))
 
-
-    while 1:
-        screenNum = Gui.screenNum()
-        selector = Gui.selector()
-        if screenNum == 0 and selector == 1: #data send
-            if telemetryStarted == False:
-                t.runThread(True)
-                v.runThread(True)
-                #g.runThread(True)
-                #b.runThread(True)
- 
-                #readBMP = threading.Thread(target = b.readBMP, daemon=True)#initialize again since we want to 
-                #readBMP.start()
-                
-                readVnav = threading.Thread(target = v.readVnav, daemon=True)#initialize again since we want to 
-                readVnav.start()
-                
-                #readGPS = threading.Thread(target = g.readGPS, daemon=True)#initialize again since we want to 
-                #readGPS.start()
-
-
-                
-                telemetrySend    = threading.Thread(target = t.telemetrySend, daemon=True)#initialize again since we want to 
-                telemetryReceive = threading.Thread(target = t.telemetryReceive, daemon=True)
-                
-                telemetryReceive.start()
-                telemetrySend.start()
-                telemetryStarted = True
-                
-        elif currentD == 11:
-            if vnavStarted == False:
-                v.runThread(True)
-                
-                readVnav = threading.Thread(target = v.readVnav, daemon=True)#initialize again since we want to 
-                readVnav.start()
-                calculateVericalAccel = threading.Thread(target = v.calculateVericalAccel, daemon=True)#initialize again since we want to 
-                calculateVericalAccel.start()
-                
-                v.gradientDecent()
-                vnavStarted = True
-               
-                
-#         elif currentD == 6: #CPU/Temp
-#             
-#             if cpuStarted == False:
-#                 something.runThread(True)
-#                 something = threading.Thread(target = something, daemon=True)
-#                 cpuStarted = True
-#                 
-#         elif currentD == 7: #Memory/Disk
-#             
-#             if memStarted == False:
-#                 something.runThread(True)
-#                 something = threading.Thread(target = something, daemon=True)
-#                 memStarted = True
-#                 
-#         elif currentD == 8: #Inward Inch
-#             
-#             if inwardStarted == False:
-#                 something.runThread(True)
-#                 something = threading.Thread(target = something, daemon=True)
-#                 inwardStarted = True
-#                 
-#         elif currentD == 9: #Outward Inch
-#             
-#             if outwardStarted == False:
-#                 something.runThread(True)
-#                 something = threading.Thread(target = something, daemon=True)
-#                 outwardStarted = True
-#                 
-#         elif currentD == 10: #Full Sweep
-#             
-#             if sweepStarted == False:
-#                 something.runThread(True)
-#                 something = threading.Thread(target = something, daemon=True)
-#                 sweepStarted = True
-#                 
-#         elif currentD == 12: #BM8280 Check
-#             
-#             if bm8280Started == False:
-#                 something.runThread(True)
-#                 something = threading.Thread(target = something, daemon=True)
-#                 bm8280Started = True
-#                 
-        elif currentD == 13: #GPS Check
-            if gpsStarted == False:
-                g.runThread(True)
-                
-                readGPS = threading.Thread(target = g.readGPS, daemon=True)#initialize again since we want to 
-                readGPS.start()
-
-                gpsStarted = True
-                
-        elif currentD == 15: #main launch sequence
-            #setup the Camera [test for cmd: raspivid -o video.h264 -t 10000]
-            #camera = PiCamera()
-            #camera.start_recording("testvid.h264")
-            print("screen 15")
-        elif currentD == 16: #main launch sequence
-            print("Exit")
-            #camera.stop_recording()
-            b.close()
-            v.closeVnavText()
-            g.close()
-            gpsDecimalFile.close()
+        
+    def buttonB(): #THIS ADDS TO COUNT WHEN PRESSED, THEN CHECKS SELECTOR AND SCRNNUM THRESHHOLDS
+        global selector
+        global scrnNum
+        selector+=1
+        
+        if selector > 3:
+            selector = 1
+            scrnNum+=1
+            if scrnNum > NUM_OF_SCREENS-1:
+                scrnNum = 0
+        scrnArray[scrnNum].createDisplay(selector)
+       # print(str(scrnNum) + "Selector:" + str(selector))
+        
+    def buttonC(self): #PUT CONDITIONS TO RUN FUNCTIONS FROM DISPLAY
+        global selector # COMMENT OUT IF BROKEN!
+        global scrnNum  # COMMENT OUT IF BROKEN!
+        if scrnNum == 0 and selector == 1:
+            main.killThreads()
+            display.fill(0)
+            display.text("send", 0, 16, 1)
+            display.show()
+            print('Booting up telemetry thread!')
+            t.runThread(True)
+              #  v.runThread(True)
+               # readVnav = threading.Thread(target = v.readVnav, daemon=True)#initialize again since we want to 
+              #  readVnav.start()
+            self.telemetryReceiveThread.start()
+            self.telemetrySendThread.start()
+            # There really is no need for scrnNum 0, selector 0, as that array doesn't "exist".
+        
+        if scrnNum == 0 and selector == 2:
+            main.killThreads()
+            option="calibrate bno"
+            display.fill(0)
+            display.text("callibrating bno055...", 0, 16, 1)
+            display.show()
+        if scrnNum == 0 and selector == 3:
+            main.killThreads()
+            option="bno stats"
+            display.fill(0)
+            display.text("send", 0, 16, 1)
+            display.show()
+        if scrnNum == 1 and selector == 1:
+            main.killThreads()
+            display.fill(0)
+            display.text("inching into your mom like", 0, 16, 1)
+            display.show()
+            m.inchin()
+        if scrnNum == 1 and selector == 2:
+            main.killThreads()
+            display.fill(0)
+            display.text("inching out of ur mom like", 0, 16, 1)
+            display.show()
+            m.inchout()
+        if scrnNum == 1 and selector == 3:
+            main.killThreads()
+            option="3"
+            display.fill(0)
+            display.text("sweeping dem hoes like", 0, 16, 1)
+            display.show()
+            m.sweep()
+        if scrnNum == 2 and selector == 1:
+            main.killThreads()
+            option="launch sequence"
+            display.fill(0)
+            display.text("", 0, 16, 1)
+            display.show()
+            print('Bootin up launch sequence thread.')
+            o.runThread(True)
+            self.launchsequenceaccel.start()
             
-        else:#if different display
-            if calculateVericalAccel.is_alive():
-                v.runThread(False)#terminate function
-                vnavStarted = False
-            if readVnav.is_alive():
-                v.runThread(False)#terminate function
-                vnavStarted = False
-            if telemetrySend.is_alive():
-                t.runThread(False)#terminate function
-                telemetryStarted = False
-#             if something.is_alive():
-#                 something.runThread(False)
-#                 cpuStarted = False
-#             if something.is_alive():
-#                 something.runThread(False)
-#                 memStarted = False
-#             if something.is_alive():
-#                 something.runThread(False)
-#                 inwardStarted = False
-#             if something.is_alive():
-#                 something.runThread(False)
-#                 outwardStarted = False
-#             if something.is_alive():
-#                 something.runThread(False)
-#                 sweepStarted = False
-#             if something.is_alive():
-#                 something.runThread(False)
-#                 bm8280Started = False
-            if readGPS.is_alive():
-                g.runThread(False)
-                gpsStarted = False
+        else:
+            option=""
 
-
-        time.sleep(.2)
-
-displaySelector = threading.Thread(target = displaySelector)
-displaySelector.start()
-
-#close active threads
+    def detectingPresses():  # Place self if broken.
+     
+        while True:
+#             currentQ = q.get()
+#             if currentQ != None:
+#                 if currentQ == "A":
+#                     main.buttonA()
+#                 elif currentQ == "B":
+#                     main.buttonB()
+#                 elif currentQ == "C":
+#                     main.buttonC()
+                    
+            currentQ = q.get()
+            if currentQ != None:
+                if currentQ == "A":
+                    main.buttonA()
+                elif currentQ == "B":
+                    main.buttonB()
+                elif currentQ == "C":
+                    bC = main()
+                    bC.buttonC()
+                    #this.buttonC()
+                    
+            time.sleep(.01)
+    detect = threading.Thread(target = detectingPresses)
+    detect.start()

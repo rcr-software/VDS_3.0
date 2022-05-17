@@ -223,7 +223,7 @@ class oled():
         timeDelay = .05
         for x in range (1,74):
             x=str(x).zfill(3)
-            location='Display/fortnite/ezgif-frame-' + x + '.jpg'
+            location='fortnite/ezgif-frame-' + x + '.jpg'
             fortniteImg = Image.open(location).resize((display.width, display.height), Image.ANTIALIAS).convert('1')
             display.image(fortniteImg)
             display.show()

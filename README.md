@@ -13,8 +13,8 @@
     pip3 install numpy
 
     pip3 install adafruit-circuitpython-bmp280 
-
     pip3 install adafruit-circuitpython-rfm9x
+    pip3 install adafruit-circuitpython-motorkit
 
 2.RaspberryPi configuration
   2.1 interfaces
@@ -32,25 +32,3 @@
     git commit -m "what you are commiting"
     git push
       follow directions you nub
-
-
-Start-up main.py on reboot:
-In order to start up a script on raspberry pi, you must create a service that executes the script. Ordinarily, you'd use rc.local or ecron but both of those do not
-function on the current raspberry pi due to unknown issues. In order to create a service use the following template:
-
-sudo nano /etc/systemd/system/service-name-here.service
-[Unit]
-Description= description-here Service
-After=multi-user.target
-
-[Service]
-Type=idle
-User=pi
-ExecStart=/usr/bin/python3 file-directory-here
-WorkingDirectory=/home/pi
-
-Restart=always
-RestartSec=60
-
-[Install]
-WantedBy=multi-user.target![image](https://user-images.githubusercontent.com/94311067/161160006-214f1e1b-8aaf-48a7-ac6d-89c2a65d28bc.png)
